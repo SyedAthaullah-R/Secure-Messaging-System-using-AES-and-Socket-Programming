@@ -13,9 +13,7 @@ public class twoWayServer {
         AES a = new AES();
         SecretKey secKey = a.generate_Secret_Key();
         try{
-            String portEnv = System.getenv("PORT");
-            int port = (portEnv != null && !portEnv.isEmpty()) ? Integer.parseInt(portEnv) : 8000;
-            ServerSocket serverSocket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(8000);
             System.out.println("Server started successfully, Waiting for the Client...");
             Socket socket = serverSocket.accept();
             System.out.println("Client Connected Successfully");
