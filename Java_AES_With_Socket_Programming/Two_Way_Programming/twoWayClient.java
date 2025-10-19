@@ -8,6 +8,7 @@ import java.net.Socket;
 import javax.crypto.SecretKey;
 
 public class twoWayClient {
+    private static final String AUTH_PASS = System.getenv("AUTH_PASS");
     public static void main(String[] args) throws Exception{
         AES a = new AES();
         Socket socket = new Socket("192.168.29.142", 8000);
@@ -15,6 +16,17 @@ public class twoWayClient {
         BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));
+        String authSignal = br.readLine();
+        if(authSignal.equals("AUTH_REQUIRED")){
+            pw.println(AUTH_PASS);
+            String response = br.readLine();
+            if(!response.equals("AUTH_SUCCESS")){
+                System.out.println("Authentication Failed");
+                socket.close();
+                return;
+            }
+            else System.out.println("Authenticated Successfully");
+        }
         String encodedKeyString = br.readLine();
         SecretKey secKey = a.keyStringToKey(encodedKeyString);
         System.out.println("Received the AES key from the Server Successfully");

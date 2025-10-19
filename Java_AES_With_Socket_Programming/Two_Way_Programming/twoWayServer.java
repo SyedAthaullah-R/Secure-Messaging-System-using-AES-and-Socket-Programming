@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 
 import JAVA_AES.*;
 public class twoWayServer {
+    private static final String AUTH_PASS = System.getenv("AUTH_PASS");
     public static void main(String[] args) throws Exception{
         AES a = new AES();
         SecretKey secKey = a.generate_Secret_Key();
@@ -20,6 +21,19 @@ public class twoWayServer {
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));
+            pw.println("AUTH_REQUIRED");
+            String clientAuth = br.readLine();
+            if(!AUTH_PASS.equals(clientAuth)){
+                pw.println("AUTH_FAILED");
+                System.out.println("Client Authentication failed, Connection closed");
+                socket.close();
+                serverSocket.close();
+                return;
+            }
+            else{
+                pw.println("AUTH_SUCCESS");
+                System.out.println("Client Authenticated Successfully");
+            }
             String encodedKey = a.keyToString(secKey);
             pw.println(encodedKey);
             System.out.println("Shared AES key sent to the Client Successfully");
